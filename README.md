@@ -64,7 +64,6 @@ Estrutura:
       - INSTRUTOR
       - EXAMINADOR
       - COORDENADOR
-      - CONVIDADO
      
   - Turmas
     - horario
