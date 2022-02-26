@@ -5,6 +5,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "membros")
@@ -35,4 +37,14 @@ public class Membro extends PanacheEntity {
 
     public Graduacao graduacao;
 
+    public static Membro novoMembro(String nome) {
+        Membro membro = new Membro();
+        membro.nome = nome;
+        return membro;
+    }
+
+    public static Optional<Membro> procurarPorNome(String value) {
+        if (Objects.isNull(value)) return Optional.empty();
+        return Membro.find("lower(nome) like lower(concat('%',?1,'%'))", value).firstResultOptional();
+    }
 }

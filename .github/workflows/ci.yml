@@ -4,9 +4,9 @@ name: Quarkus Codestart CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ * ]
   pull_request:
-    branches: [ main ]
+    branches: [ * ]
 
 jobs:
   build:
@@ -17,5 +17,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build
-        run: ./mvnw verify -B
+      - name: Install node and yarn
+        run: ./mvnw generate-resources -B -Dui.deps -DskipTests
+      - name: Build front-end and back-end
+        run: ./mvnw verify -B -Dui
