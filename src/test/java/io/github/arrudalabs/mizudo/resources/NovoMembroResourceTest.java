@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 @QuarkusTest
@@ -27,15 +28,6 @@ public class NovoMembroResourceTest {
     @Transactional
     void execute(Runnable runnable) {
         runnable.run();
-    }
-
-    /**
-     * Pensando em autenticação no futuro
-     * @return
-     */
-    private RequestSpecification newRequest() {
-        return given()
-                .when();
     }
 
     @BeforeEach
@@ -80,13 +72,13 @@ public class NovoMembroResourceTest {
     public static Stream<Arguments> teste03Args() {
         return Stream.of(
                 Arguments.arguments(
-                        "case o nome venha em branco", " "
+                        "caso o nome venha em branco", " "
                 ),
                 Arguments.arguments(
-                        "case o nome venha em vazio", ""
+                        "caso o nome venha em vazio", ""
                 ),
                 Arguments.arguments(
-                        "case o nome venha nulo", null
+                        "caso o nome venha nulo", null
                 )
         );
     }

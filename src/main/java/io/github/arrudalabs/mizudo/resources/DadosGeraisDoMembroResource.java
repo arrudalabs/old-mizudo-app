@@ -15,7 +15,7 @@ public class DadosGeraisDoMembroResource {
 
     @PUT
     @Transactional
-    public DadosGerais set(@PathParam("membroId")
+    public DadosGerais setDadosGerais(@PathParam("membroId")
                             @DeveSerMembroIdValido final Long membroId,
                            @Valid final DadosGerais dadosGerais) {
         Membro membro = Membro.buscarPorId(membroId);
@@ -25,7 +25,7 @@ public class DadosGeraisDoMembroResource {
 
 
     @GET
-    public DadosGerais get(@PathParam("membroId") final Long membroId) {
+    public DadosGerais getDadosGerais(@PathParam("membroId") final Long membroId) {
         Membro membro = Membro.buscarPorId(membroId);
         if (membro == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);

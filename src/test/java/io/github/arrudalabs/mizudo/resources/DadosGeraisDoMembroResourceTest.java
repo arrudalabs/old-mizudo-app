@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-
+import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
 public class DadosGeraisDoMembroResourceTest {
@@ -26,16 +26,6 @@ public class DadosGeraisDoMembroResourceTest {
     @Transactional
     void execute(Runnable runnable) {
         runnable.run();
-    }
-
-    /**
-     * Pensando em autenticação no futuro
-     *
-     * @return
-     */
-    private RequestSpecification newRequest() {
-        return given()
-                .when();
     }
 
     @BeforeEach
@@ -62,7 +52,8 @@ public class DadosGeraisDoMembroResourceTest {
                                 .add("logradouro", UUID.randomUUID().toString())
                                 .add("numero", UUID.randomUUID().toString())
                                 .add("complemento", UUID.randomUUID().toString())
-                                .add("cidade", UUID.randomUUID().toString())
+                                .add("localidade", UUID.randomUUID().toString())
+                                .add("bairro", UUID.randomUUID().toString())
                                 .add("uf", UUID.randomUUID().toString())
                                 .add("cep", UUID.randomUUID().toString())
                                 .build()
@@ -80,7 +71,8 @@ public class DadosGeraisDoMembroResourceTest {
                 .body("endereco.logradouro", equalTo(payload.getJsonObject("endereco").getString("logradouro")))
                 .body("endereco.numero", equalTo(payload.getJsonObject("endereco").getString("numero")))
                 .body("endereco.complemento", equalTo(payload.getJsonObject("endereco").getString("complemento")))
-                .body("endereco.cidade", equalTo(payload.getJsonObject("endereco").getString("cidade")))
+                .body("endereco.localidade", equalTo(payload.getJsonObject("endereco").getString("localidade")))
+                .body("endereco.bairro", equalTo(payload.getJsonObject("endereco").getString("bairro")))
                 .body("endereco.uf", equalTo(payload.getJsonObject("endereco").getString("uf")))
                 .body("endereco.cep", equalTo(payload.getJsonObject("endereco").getString("cep")))
         ;
@@ -96,7 +88,8 @@ public class DadosGeraisDoMembroResourceTest {
                 .body("endereco.logradouro", equalTo(payload.getJsonObject("endereco").getString("logradouro")))
                 .body("endereco.numero", equalTo(payload.getJsonObject("endereco").getString("numero")))
                 .body("endereco.complemento", equalTo(payload.getJsonObject("endereco").getString("complemento")))
-                .body("endereco.cidade", equalTo(payload.getJsonObject("endereco").getString("cidade")))
+                .body("endereco.localidade", equalTo(payload.getJsonObject("endereco").getString("localidade")))
+                .body("endereco.bairro", equalTo(payload.getJsonObject("endereco").getString("bairro")))
                 .body("endereco.uf", equalTo(payload.getJsonObject("endereco").getString("uf")))
                 .body("endereco.cep", equalTo(payload.getJsonObject("endereco").getString("cep")))
         ;
