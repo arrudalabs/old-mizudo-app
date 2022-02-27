@@ -61,29 +61,12 @@ public class NovoMembroResourceTest {
                 .body("nome", equalTo("Maximillian"));
     }
 
-
-    @Test
-    @DisplayName("não deve adicionar novo membro com o mesmo nome")
-    @Order(2)
-    public void teste02() {
-
-        execute(() -> {
-            Membro.novoMembro("Maximillian").persist();
-        });
-
-        newRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Map.of("nome", "Maximillian"))
-                .post("/resources/membros")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
-    }
-
     @ParameterizedTest(name = "{index} {0}")
     @DisplayName("não deve adicionar novo membro sem informar um nome válido")
     @Order(3)
     @MethodSource("teste03Args")
     public void teste03(String caso, String nome) {
+
         newRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.isNull(nome) ?

@@ -3,10 +3,11 @@ package io.github.arrudalabs.mizudo.model;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(name = "membros")
@@ -19,16 +20,28 @@ public class Membro extends PanacheEntity {
 
     public DadosFisicos dadosFisicos;
 
-    @OneToMany(mappedBy = "membro")
-    public List<ExameMedico> examesMedicos;
+    @Valid
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "exames_medicos",
+            joinColumns = @JoinColumn(name = "membro_id"))
+    public Set<ExameMedico> examesMedicos = new LinkedHashSet<>();
 
+    public ExameMedico exameMedicoMaisAtual() {
+        return this.examesMedicos.stream().sorted().findFirst().orElse(null);
+    }
+
+    @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "membros_emails",
             joinColumns = @JoinColumn(name = "membro_id"))
-    @Column(name = "email")
-    public List<String> emails;
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "email"))
+    })
+    public List<EmailAddress> emails;
 
+    @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "membros_telefones",
@@ -40,11 +53,11 @@ public class Membro extends PanacheEntity {
     public static Membro novoMembro(String nome) {
         Membro membro = new Membro();
         membro.nome = nome;
+        membro.persist();
         return membro;
     }
 
-    public static Optional<Membro> procurarPorNome(String value) {
-        if (Objects.isNull(value)) return Optional.empty();
-        return Membro.find("lower(nome) like lower(concat('%',?1,'%'))", value).firstResultOptional();
+    public static Membro buscarPorId(Long id){
+        return Membro.findById(id);
     }
 }

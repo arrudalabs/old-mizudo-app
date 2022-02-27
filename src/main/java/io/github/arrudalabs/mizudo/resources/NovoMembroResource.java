@@ -1,7 +1,6 @@
 package io.github.arrudalabs.mizudo.resources;
 
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.NaoDeveConterMembroComMesmoNome;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -13,45 +12,39 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Path("/resources/membros")
+@Transactional
 public class NovoMembroResource {
 
     @POST
-    @Consumes({
-            MediaType.APPLICATION_JSON
-    })
-    @Produces({
-            MediaType.APPLICATION_JSON
-    })
-    @Transactional
-    public NovoMembroResponse adicionarMembro(@Valid NovoMembroRequest novoMembroRequest) {
-        return NovoMembroResponse.of(novoMembroRequest.novoMembro());
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public MembroRegistrado novoMembro(@Valid NovoMembroResource.NovoMembro novoMembro) {
+        return MembroRegistrado.of(novoMembro.criarNovoMembro());
     }
 
-
-    public static class NovoMembroRequest {
+    public static class NovoMembro {
 
         @NotBlank
-        @NaoDeveConterMembroComMesmoNome
         public String nome;
 
-        public Membro novoMembro() {
+        Membro criarNovoMembro() {
             Membro novoMembro = Membro.novoMembro(this.nome);
-            novoMembro.persist();
             return novoMembro;
         }
+
     }
 
-    public static class NovoMembroResponse {
-
-        public static NovoMembroResponse of(Membro membro) {
-            var novoMembroResponse = new NovoMembroResponse();
-            novoMembroResponse.id = membro.id;
-            novoMembroResponse.nome = membro.nome;
-            return novoMembroResponse;
-        }
+    public static class MembroRegistrado {
 
         public Long id;
         public String nome;
+
+        static MembroRegistrado of(Membro membro) {
+            var response = new MembroRegistrado();
+            response.id = membro.id;
+            response.nome = membro.nome;
+            return response;
+        }
 
     }
 }
