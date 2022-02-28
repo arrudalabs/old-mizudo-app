@@ -17,8 +17,10 @@ public class Membro extends PanacheEntity {
     @NotBlank
     public String nome;
 
+    @Valid
     public DadosGerais dadosGerais;
 
+    @Valid
     public DadosFisicos dadosFisicos;
 
     @Valid
@@ -41,10 +43,6 @@ public class Membro extends PanacheEntity {
             name = "exames_medicos",
             joinColumns = @JoinColumn(name = "membro_id"))
     public Set<ExameMedico> examesMedicos = new LinkedHashSet<>();
-
-    public ExameMedico exameMedicoMaisAtual() {
-        return this.examesMedicos.stream().sorted().findFirst().orElse(null);
-    }
 
     public Graduacao graduacao;
 
