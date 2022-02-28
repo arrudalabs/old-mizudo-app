@@ -23,6 +23,7 @@ public class Membro extends PanacheEntity {
 
     public DadosFisicos dadosFisicos;
 
+    @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "membros_emails",
@@ -46,8 +47,6 @@ public class Membro extends PanacheEntity {
     public ExameMedico exameMedicoMaisAtual() {
         return this.examesMedicos.stream().sorted().findFirst().orElse(null);
     }
-
-
 
     public Graduacao graduacao;
 
