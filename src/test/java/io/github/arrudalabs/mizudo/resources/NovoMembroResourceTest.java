@@ -34,7 +34,7 @@ public class NovoMembroResourceTest {
     @AfterEach
     public void removerMembros() {
         execute(() -> {
-            Membro.deleteAll();
+            Membro.removerTodosMembros();
         });
     }
 

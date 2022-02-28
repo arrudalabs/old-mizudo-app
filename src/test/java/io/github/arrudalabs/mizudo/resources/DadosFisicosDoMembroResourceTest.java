@@ -26,7 +26,7 @@ public class DadosFisicosDoMembroResourceTest {
     @AfterEach
     public void removerMembros() {
         execute(() -> {
-            Membro.deleteAll();
+            Membro.removerTodosMembros();
         });
     }
 

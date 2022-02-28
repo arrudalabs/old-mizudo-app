@@ -4,8 +4,11 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +23,19 @@ public class Membro extends PanacheEntity {
 
     public DadosFisicos dadosFisicos;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "membros_emails",
+            joinColumns = @JoinColumn(name = "membro_id"))
+    public List<@NotBlank @Email String> emails;
+
+    @Valid
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "membros_telefones",
+            joinColumns = @JoinColumn(name = "responsavel_id"))
+    public List<Telefone> telefones;
+
     @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -31,22 +47,7 @@ public class Membro extends PanacheEntity {
         return this.examesMedicos.stream().sorted().findFirst().orElse(null);
     }
 
-    @Valid
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "membros_emails",
-            joinColumns = @JoinColumn(name = "membro_id"))
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "email"))
-    })
-    public List<EmailAddress> emails;
 
-    @Valid
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "membros_telefones",
-            joinColumns = @JoinColumn(name = "responsavel_id"))
-    public List<Telefone> telefones;
 
     public Graduacao graduacao;
 
@@ -59,5 +60,16 @@ public class Membro extends PanacheEntity {
 
     public static Membro buscarPorId(Long id){
         return Membro.findById(id);
+    }
+
+    public static void removerTodosMembros(){
+        List<Membro> membros = Membro.listAll();
+        membros.stream().forEach(Membro::apagar);
+    }
+
+    private void apagar() {
+        this.emails.clear();
+        this.persist();
+        this.delete();
     }
 }

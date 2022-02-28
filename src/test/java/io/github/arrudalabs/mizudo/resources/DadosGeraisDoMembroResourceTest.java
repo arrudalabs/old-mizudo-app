@@ -19,6 +19,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
+
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
 public class DadosGeraisDoMembroResourceTest {
@@ -32,7 +33,7 @@ public class DadosGeraisDoMembroResourceTest {
     @AfterEach
     public void removerMembros() {
         execute(() -> {
-            Membro.deleteAll();
+            Membro.removerTodosMembros();
         });
     }
 
