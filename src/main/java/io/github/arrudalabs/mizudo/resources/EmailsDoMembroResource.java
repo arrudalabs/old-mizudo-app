@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Path("/resources/membros/{membroId}/emails")
-public class EmailsDeMembrosResource {
+public class EmailsDoMembroResource {
 
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})

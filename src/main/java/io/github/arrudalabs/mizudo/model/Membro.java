@@ -69,6 +69,7 @@ public class Membro extends PanacheEntity {
 
     private void apagar() {
         this.emails.clear();
+        this.telefones.clear();
         this.persist();
         this.delete();
     }

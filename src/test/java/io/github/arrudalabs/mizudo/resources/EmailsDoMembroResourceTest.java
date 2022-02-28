@@ -8,32 +8,31 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.transaction.Transactional;
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class EmailsDeMembrosResourceTest {
+public class EmailsDoMembroResourceTest {
+    @Inject
+    TestSupport testSupport;
 
-    @Transactional
-    public <R> R execute(Supplier<R> supplier) {
-        return supplier.get();
-    }
 
     @BeforeEach
     @AfterEach
     public void limparMembros() {
-        execute(() -> {
+        testSupport.execute(() -> {
             Membro.removerTodosMembros();
-            return null;
         });
     }
 
@@ -41,7 +40,7 @@ public class EmailsDeMembrosResourceTest {
     @DisplayName("adicionar um email válido a um membro")
     public void test01() {
 
-        var membroValido = execute(() -> {
+        var membroValido = testSupport.executeAndGet(() -> {
             return Membro.novoMembro(UUID.randomUUID().toString());
         });
 
@@ -50,25 +49,25 @@ public class EmailsDeMembrosResourceTest {
         var emailEsperado3 = "dearrudam3@gmail.com";
 
         Long membroId = membroValido.id;
-        setEmailsDoMembro(membroId, emailEsperado1)
+        setEmailsDoMembroComSucesso(membroId, emailEsperado1)
                 .body("$", hasItems(emailEsperado1));
 
         listarEmailsDoMembro(membroId)
                 .body("$", hasSize(1));
 
-        setEmailsDoMembro(membroId,emailEsperado1,emailEsperado2)
+        setEmailsDoMembroComSucesso(membroId, emailEsperado1, emailEsperado2)
                 .body("$", hasItems(emailEsperado1, emailEsperado2));
 
         listarEmailsDoMembro(membroId)
                 .body("$", hasSize(2));
 
-        setEmailsDoMembro(membroId,emailEsperado1,emailEsperado2,emailEsperado3)
+        setEmailsDoMembroComSucesso(membroId, emailEsperado1, emailEsperado2, emailEsperado3)
                 .body("$", hasItems(emailEsperado1, emailEsperado2, emailEsperado3));
 
         listarEmailsDoMembro(membroId)
                 .body("$", hasSize(3));
 
-        setEmailsDoMembro(membroId)
+        setEmailsDoMembroComSucesso(membroId)
                 .body("$", hasSize(0));
 
         listarEmailsDoMembro(membroId)
@@ -76,23 +75,54 @@ public class EmailsDeMembrosResourceTest {
 
     }
 
-    private ValidatableResponse setEmailsDoMembro(Long membroId, String... emails) {
-        return newRequest()
+    private ValidatableResponse setEmailsDoMembroComSucesso(Long membroId, String... emails) {
+        return setEmaisDoMembro(membroId, emails)
+                .statusCode(Response.Status.OK.getStatusCode());
+    }
+
+    private ValidatableResponse setEmaisDoMembro(Long membroId, String... emails) {
+        return testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(emails)
                 .put("/resources/membros/{id}/emails", Map.of("id", membroId))
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                ;
+                .then();
     }
 
     private ValidatableResponse listarEmailsDoMembro(Long membroId) {
-        return newRequest()
+        return testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{id}/emails", Map.of("id", membroId))
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 ;
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @DisplayName("não deve aceitar lista com e-mails inválidos para um dado membro")
+    @MethodSource("test02Args")
+    public void test02(String cenario, String email) {
+        var membroId = testSupport
+                .executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
+        setEmaisDoMembro(membroId, email)
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+    }
+
+    static Stream<Arguments> test02Args() {
+        return Stream.of(
+                Arguments.arguments(
+                        "não permitir e-mail inválido",
+                        UUID.randomUUID().toString()
+                ),
+                Arguments.arguments(
+                        "não permitir e-mail em branco",
+                        ""
+                ),
+                Arguments.arguments(
+                        "não permitir e-mail nulo",
+                        null
+                )
+
+        );
     }
 
 }

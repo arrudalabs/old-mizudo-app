@@ -2,37 +2,33 @@ package io.github.arrudalabs.mizudo.resources;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
 
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
 public class DadosGeraisDoMembroResourceTest {
 
-    @Transactional
-    void execute(Runnable runnable) {
-        runnable.run();
-    }
+    @Inject
+    TestSupport testSupport;
+
 
     @BeforeEach
     @AfterEach
     public void removerMembros() {
-        execute(() -> {
+        testSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -41,10 +37,9 @@ public class DadosGeraisDoMembroResourceTest {
     @DisplayName("deve adicionar dados gerais ao membro")
     @Order(1)
     public void teste01() {
-        AtomicReference<Membro> membroPersistido = new AtomicReference<>();
-        execute(() -> {
-            Membro membro = Membro.novoMembro("Maximillian");
-            membroPersistido.getAndSet(membro);
+        Membro membroPersistido =
+        testSupport.executeAndGet(() -> {
+            return Membro.novoMembro("Maximillian");
         });
         JsonObject payload = Json.createObjectBuilder()
                 .add("dataNascimento", LocalDate.now().toString())
@@ -61,10 +56,10 @@ public class DadosGeraisDoMembroResourceTest {
                 )
                 .build();
 
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload.toString())
-                .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.get().id))
+                .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,9 +74,9 @@ public class DadosGeraisDoMembroResourceTest {
         ;
 
 
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
-                .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.get().id))
+                .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -103,27 +98,27 @@ public class DadosGeraisDoMembroResourceTest {
     @DisplayName("deve adicionar dados gerais em branco ao membro")
     @Order(1)
     public void teste02() {
-        AtomicReference<Membro> membroPersistido = new AtomicReference<>();
-        execute(() -> {
-            Membro membro = Membro.novoMembro("Maximillian");
-            membroPersistido.getAndSet(membro);
+        Membro membroPersistido =
+        testSupport.executeAndGet(() -> {
+            return Membro.novoMembro("Maximillian");
         });
+
         JsonObject payload = Json.createObjectBuilder()
                 .build();
 
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload.toString())
-                .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.get().id))
+                .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("isEmpty()", is(true))
         ;
 
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
-                .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.get().id))
+                .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)

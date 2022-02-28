@@ -2,14 +2,13 @@ package io.github.arrudalabs.mizudo.resources;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.inject.Inject;
 import javax.json.Json;
-import javax.transaction.Transactional;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
@@ -18,22 +17,20 @@ import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static io.github.arrudalabs.mizudo.resources.TestSupport.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
 public class NovoMembroResourceTest {
 
-    @Transactional
-    void execute(Runnable runnable) {
-        runnable.run();
-    }
+    @Inject
+    TestSupport testSupport;
+
 
     @BeforeEach
     @AfterEach
     public void removerMembros() {
-        execute(() -> {
+        testSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -42,7 +39,7 @@ public class NovoMembroResourceTest {
     @DisplayName("deve adicionar novo membro")
     @Order(1)
     public void teste01() {
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("nome", "Maximillian"))
                 .post("/resources/membros")
@@ -59,7 +56,7 @@ public class NovoMembroResourceTest {
     @MethodSource("teste03Args")
     public void teste03(String caso, String nome) {
 
-        newRequest()
+        testSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.isNull(nome) ?
                         Json.createObjectBuilder().addNull("nome").build():
