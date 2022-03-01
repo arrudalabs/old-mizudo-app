@@ -1,4 +1,4 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 
 import io.github.arrudalabs.mizudo.model.Membro;
@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import java.util.List;
 
-@Path("/resources/membros/{membroId}/telefones")
+@Path("/membros/{membroId}/telefones")
 public class TelefonesDoMembroResource {
 
     @PUT

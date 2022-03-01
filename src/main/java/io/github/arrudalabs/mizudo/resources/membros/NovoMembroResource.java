@@ -1,4 +1,4 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 
@@ -11,7 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/resources/membros")
+@Path("/membros")
 @Transactional
 public class NovoMembroResource {
 

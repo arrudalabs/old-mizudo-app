@@ -1,4 +1,4 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/resources/membros/{membroId}/emails")
+@Path("/membros/{membroId}/emails")
 public class EmailsDoMembroResource {
 
     @PUT

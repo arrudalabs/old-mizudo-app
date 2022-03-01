@@ -1,6 +1,7 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
+import io.github.arrudalabs.mizudo.resources.ApiTestSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.*;
 
@@ -22,13 +23,13 @@ import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 public class DadosGeraisDoMembroResourceTest {
 
     @Inject
-    TestSupport testSupport;
+    ApiTestSupport apiTestSupport;
 
 
     @BeforeEach
     @AfterEach
     public void removerMembros() {
-        testSupport.execute(() -> {
+        apiTestSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -38,7 +39,7 @@ public class DadosGeraisDoMembroResourceTest {
     @Order(1)
     public void teste01() {
         Membro membroPersistido =
-        testSupport.executeAndGet(() -> {
+        apiTestSupport.executeAndGet(() -> {
             return Membro.novoMembro("Maximillian");
         });
         JsonObject payload = Json.createObjectBuilder()
@@ -56,7 +57,7 @@ public class DadosGeraisDoMembroResourceTest {
                 )
                 .build();
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload.toString())
                 .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
@@ -74,7 +75,7 @@ public class DadosGeraisDoMembroResourceTest {
         ;
 
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()
@@ -99,14 +100,14 @@ public class DadosGeraisDoMembroResourceTest {
     @Order(1)
     public void teste02() {
         Membro membroPersistido =
-        testSupport.executeAndGet(() -> {
+        apiTestSupport.executeAndGet(() -> {
             return Membro.novoMembro("Maximillian");
         });
 
         JsonObject payload = Json.createObjectBuilder()
                 .build();
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload.toString())
                 .put("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
@@ -116,7 +117,7 @@ public class DadosGeraisDoMembroResourceTest {
                 .body("isEmpty()", is(true))
         ;
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{id}/dados-gerais", Map.of("id", membroPersistido.id))
                 .then()

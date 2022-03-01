@@ -1,6 +1,7 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
+import io.github.arrudalabs.mizudo.resources.ApiTestSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,13 +25,13 @@ import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 public class NovoMembroResourceTest {
 
     @Inject
-    TestSupport testSupport;
+    ApiTestSupport apiTestSupport;
 
 
     @BeforeEach
     @AfterEach
     public void removerMembros() {
-        testSupport.execute(() -> {
+        apiTestSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -39,7 +40,7 @@ public class NovoMembroResourceTest {
     @DisplayName("deve adicionar novo membro")
     @Order(1)
     public void teste01() {
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("nome", "Maximillian"))
                 .post("/resources/membros")
@@ -56,7 +57,7 @@ public class NovoMembroResourceTest {
     @MethodSource("teste03Args")
     public void teste03(String caso, String nome) {
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.isNull(nome) ?
                         Json.createObjectBuilder().addNull("nome").build():

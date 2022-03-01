@@ -1,6 +1,7 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
+import io.github.arrudalabs.mizudo.resources.ApiTestSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +22,12 @@ import static org.hamcrest.Matchers.*;
 public class DadosFisicosDoMembroResourceTest {
 
     @Inject
-    TestSupport testSupport;
+    ApiTestSupport apiTestSupport;
 
     @BeforeEach
     @AfterEach
     public void removerMembros() {
-        testSupport.execute(() -> {
+        apiTestSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -36,7 +37,7 @@ public class DadosFisicosDoMembroResourceTest {
     @DisplayName("deve adicionar os dados físicos do membro")
     public void test01() {
 
-        Long membroId = testSupport.executeAndGet(() -> {
+        Long membroId = apiTestSupport.executeAndGet(() -> {
             return Membro.novoMembro(UUID.randomUUID().toString()).id;
         });
 
@@ -45,7 +46,7 @@ public class DadosFisicosDoMembroResourceTest {
                 .add("peso", 85.0)
                 .add("sexo", "MASCULINO").build();
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload.toString())
                 .put("/resources/membros/{membroId}/dados-fisicos", Map.of("membroId", membroId))
@@ -57,7 +58,7 @@ public class DadosFisicosDoMembroResourceTest {
                 .body("sexo", equalTo(payload.getString("sexo")))
         ;
 
-        testSupport.newAuthenticatedRequest()
+        apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{membroId}/dados-fisicos", Map.of("membroId", membroId))
                 .then()

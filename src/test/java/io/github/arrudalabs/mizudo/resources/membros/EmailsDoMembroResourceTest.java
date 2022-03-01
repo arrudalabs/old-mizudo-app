@@ -1,7 +1,8 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 
 import io.github.arrudalabs.mizudo.model.Membro;
+import io.github.arrudalabs.mizudo.resources.ApiTestSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -25,13 +26,13 @@ import static org.hamcrest.Matchers.hasSize;
 @QuarkusTest
 public class EmailsDoMembroResourceTest {
     @Inject
-    TestSupport testSupport;
+    ApiTestSupport apiTestSupport;
 
 
     @BeforeEach
     @AfterEach
     public void limparMembros() {
-        testSupport.execute(() -> {
+        apiTestSupport.execute(() -> {
             Membro.removerTodosMembros();
         });
     }
@@ -40,7 +41,7 @@ public class EmailsDoMembroResourceTest {
     @DisplayName("adicionar um email válido a um membro")
     public void test01() {
 
-        var membroValido = testSupport.executeAndGet(() -> {
+        var membroValido = apiTestSupport.executeAndGet(() -> {
             return Membro.novoMembro(UUID.randomUUID().toString());
         });
 
@@ -81,7 +82,7 @@ public class EmailsDoMembroResourceTest {
     }
 
     private ValidatableResponse setEmaisDoMembro(Long membroId, String... emails) {
-        return testSupport.newAuthenticatedRequest()
+        return apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(emails)
                 .put("/resources/membros/{id}/emails", Map.of("id", membroId))
@@ -89,7 +90,7 @@ public class EmailsDoMembroResourceTest {
     }
 
     private ValidatableResponse listarEmailsDoMembro(Long membroId) {
-        return testSupport.newAuthenticatedRequest()
+        return apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{id}/emails", Map.of("id", membroId))
                 .then()
@@ -101,7 +102,7 @@ public class EmailsDoMembroResourceTest {
     @DisplayName("não deve aceitar lista com e-mails inválidos para um dado membro")
     @MethodSource("test02Args")
     public void test02(String cenario, String email) {
-        var membroId = testSupport
+        var membroId = apiTestSupport
                 .executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
         setEmaisDoMembro(membroId, email)
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());

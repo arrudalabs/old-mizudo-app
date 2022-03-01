@@ -1,8 +1,9 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.github.arrudalabs.mizudo.model.Telefone;
+import io.github.arrudalabs.mizudo.resources.ApiTestSupport;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ValidatableResponse;
@@ -29,19 +30,19 @@ import static org.hamcrest.MatcherAssert.*;
 public class TelefonesDoMembroResourceTest {
 
     @Inject
-    TestSupport testSupport;
+    ApiTestSupport apiTestSupport;
 
     @BeforeEach
     @AfterEach
     public void apagarMembros() {
-        testSupport.execute(Membro::removerTodosMembros);
+        apiTestSupport.execute(Membro::removerTodosMembros);
     }
 
     @Test
     @DisplayName("deve definir telefones para o membro")
     public void test01() {
 
-        var membroId = testSupport.executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
+        var membroId = apiTestSupport.executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
 
         var telefone1 = Telefone.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
         var telefone2 = Telefone.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
@@ -78,7 +79,7 @@ public class TelefonesDoMembroResourceTest {
     }
 
     private ValidatableResponse definirTelefones(Long membroId, Telefone... telefones) {
-        return testSupport.newAuthenticatedRequest()
+        return apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(telefones)
                 .put("/resources/membros/{id}/telefones", membroId)
@@ -86,7 +87,7 @@ public class TelefonesDoMembroResourceTest {
     }
 
     private ValidatableResponse getTelefones(Long membroId) {
-        return testSupport.newAuthenticatedRequest()
+        return apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .get("/resources/membros/{id}/telefones", membroId)
                 .then();
@@ -96,7 +97,7 @@ public class TelefonesDoMembroResourceTest {
     @DisplayName("não deve aceitar lista com telefones inválidos para um dado membro")
     @MethodSource("test02Args")
     public void test02(String cenario, Telefone telefone) {
-        var membroId = testSupport
+        var membroId = apiTestSupport
                 .executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
         definirTelefones(membroId,telefone)
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());

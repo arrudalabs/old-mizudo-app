@@ -1,4 +1,4 @@
-package io.github.arrudalabs.mizudo.resources;
+package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.DadosFisicos;
 import io.github.arrudalabs.mizudo.model.Membro;
@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import java.util.Optional;
 
-@Path("/resources/membros/{membroId}/dados-fisicos")
+@Path("/membros/{membroId}/dados-fisicos")
 public class DadosFisicosDoMembroResource {
 
     @PUT
