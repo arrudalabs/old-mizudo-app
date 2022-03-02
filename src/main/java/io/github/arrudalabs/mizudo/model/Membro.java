@@ -1,5 +1,6 @@
 package io.github.arrudalabs.mizudo.model;
 
+import io.github.arrudalabs.mizudo.resources.membros.ListagemDeMembrosResource;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
@@ -8,7 +9,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "membros")
@@ -53,13 +56,17 @@ public class Membro extends PanacheEntity {
         return membro;
     }
 
-    public static Membro buscarPorId(Long id){
+    public static Membro buscarPorId(Long id) {
         return Membro.findById(id);
     }
 
-    public static void removerTodosMembros(){
+    public static void removerTodosMembros() {
         List<Membro> membros = Membro.listAll();
         membros.stream().forEach(Membro::apagar);
+    }
+
+    public static Stream<Membro> listarMembros() {
+        return Membro.streamAll();
     }
 
     private void apagar() {
@@ -68,4 +75,5 @@ public class Membro extends PanacheEntity {
         this.persist();
         this.delete();
     }
+
 }

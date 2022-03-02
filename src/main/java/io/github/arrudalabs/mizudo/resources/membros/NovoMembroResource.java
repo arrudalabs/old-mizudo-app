@@ -34,17 +34,4 @@ public class NovoMembroResource {
 
     }
 
-    public static class MembroRegistrado {
-
-        public Long id;
-        public String nome;
-
-        static MembroRegistrado of(Membro membro) {
-            var response = new MembroRegistrado();
-            response.id = membro.id;
-            response.nome = membro.nome;
-            return response;
-        }
-
-    }
 }
