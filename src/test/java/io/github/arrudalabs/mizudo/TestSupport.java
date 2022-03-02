@@ -1,6 +1,7 @@
 package io.github.arrudalabs.mizudo;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 import javax.transaction.Transactional;
 import java.util.function.Supplier;
 
