@@ -1,19 +1,26 @@
 package io.github.arrudalabs.mizudo.model;
 
+import io.github.arrudalabs.mizudo.validation.ValidationGroups;
+
+import javax.json.bind.annotation.JsonbDateFormat;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
-public class ExameMedico implements Comparable<ExameMedico> {
+public class ExameMedico {
+
+    @JsonbDateFormat(value = "yyyy-MM-dd")
+    @NotNull(groups = ValidationGroups.OnPut.class)
     public LocalDate data;
     public String obs;
 
-    @Override
-    public int compareTo(ExameMedico o) {
-        if (this.equals(o))
-            return 0;
-        return Objects.compare(this.data, o.data, LocalDate::compareTo);
+    public static ExameMedico novoExameMedico(LocalDate data, String obs) {
+        var exameMedico = new ExameMedico();
+        exameMedico.data = data;
+        exameMedico.obs = obs;
+        return exameMedico;
     }
 
     @Override

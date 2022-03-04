@@ -1,6 +1,5 @@
 package io.github.arrudalabs.mizudo.model;
 
-import io.github.arrudalabs.mizudo.resources.membros.ListagemDeMembrosResource;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
@@ -9,7 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -69,9 +68,14 @@ public class Membro extends PanacheEntity {
         return Membro.streamAll();
     }
 
+    public static Optional<Membro> buscarPorIdOptional(Long id) {
+        return Membro.findByIdOptional(id);
+    }
+
     private void apagar() {
         this.emails.clear();
         this.telefones.clear();
+        this.examesMedicos.clear();
         this.persist();
         this.delete();
     }

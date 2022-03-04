@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
@@ -70,6 +71,42 @@ class ListarMembrosResourceTest {
                 equalTo(membro1.nome));
 
     }
+
+    @Test
+    @Order(3)
+    public void testBuscarUmMembroQueExiste(){
+
+        Membro membroPersistido = apiTestSupport.executeAndGet(() -> {
+            return Membro.novoMembro(UUID.randomUUID().toString());
+        });
+
+        buscarMembro(membroPersistido.id)
+                .statusCode(Response.Status.OK.getStatusCode())
+                .body("id", equalTo(membroPersistido.id.intValue()))
+                .body("nome", equalTo(membroPersistido.nome));
+
+
+    }
+
+    private ValidatableResponse buscarMembro(Object membroId) {
+        return apiTestSupport
+                .newAuthenticatedRequest()
+                .accept(ContentType.JSON)
+                .get("/resources/membros/{id}", membroId)
+                .then();
+    }
+
+    @Test
+    @Order(4)
+    public void testBuscarUmMembroInvalido(){
+
+       buscarMembro(99L)
+               .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+       buscarMembro("rwerwer")
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+    }
+
 
     private ValidatableResponse solicitarListaDeMembros() {
         return apiTestSupport
