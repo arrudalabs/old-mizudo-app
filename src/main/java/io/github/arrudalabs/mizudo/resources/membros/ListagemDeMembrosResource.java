@@ -1,7 +1,6 @@
 package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;

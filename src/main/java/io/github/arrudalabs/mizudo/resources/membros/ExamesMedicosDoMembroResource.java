@@ -2,7 +2,7 @@ package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.ExameMedico;
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
+import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 import io.github.arrudalabs.mizudo.validation.ValidationGroups;
 
 import javax.transaction.Transactional;
@@ -22,10 +22,11 @@ public class ExamesMedicosDoMembroResource {
     @Transactional
     public Set<ExameMedico> definirExamesMedicosDoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido
-                    Long membroId,
-            @Valid @ConvertGroup(to = ValidationGroups.OnPut.class)
-            final List<@NotNull ExameMedico> exameMedicos) {
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            ) Long membroId,
+            @Valid @ConvertGroup(to = ValidationGroups.OnPut.class) final List<@NotNull ExameMedico> exameMedicos) {
         return Membro.buscarPorIdOptional(membroId)
                 .map(membro -> {
                     membro.examesMedicos.clear();
@@ -37,8 +38,10 @@ public class ExamesMedicosDoMembroResource {
     @GET
     public Set<ExameMedico> listarExamesMedicosDoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido
-                    Long membroId) {
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            ) Long membroId) {
         return Membro.buscarPorIdOptional(membroId)
                 .filter(Objects::nonNull)
                 .map(membro -> membro.examesMedicos)

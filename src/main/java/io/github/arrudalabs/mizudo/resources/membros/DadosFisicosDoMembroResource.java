@@ -2,7 +2,7 @@ package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.DadosFisicos;
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
+import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -18,7 +18,10 @@ public class DadosFisicosDoMembroResource {
     @PUT
     @Transactional
     public DadosFisicos setDadosFisicos(@PathParam("membroId")
-                                        @DeveSerMembroIdValido Long membroId,
+                                        @DeveSerIdValido(
+                                                entityClass = Membro.class,
+                                                message = "O membro informado não é valido"
+                                        ) Long membroId,
                                         @Valid DadosFisicos dadosFisicos) {
         Membro membro = Membro.findById(membroId);
         membro.dadosFisicos = dadosFisicos;
@@ -27,7 +30,10 @@ public class DadosFisicosDoMembroResource {
 
     @GET
     public DadosFisicos getDadosFisicos(@PathParam("membroId")
-                                        @DeveSerMembroIdValido Long membroId){
+                                        @DeveSerIdValido(
+                                                entityClass = Membro.class,
+                                                message = "O membro informado não é valido"
+                                        ) Long membroId) {
         Membro membro = Membro.findById(membroId);
         return Optional.ofNullable(membro.dadosFisicos).orElseGet(DadosFisicos::new);
     }

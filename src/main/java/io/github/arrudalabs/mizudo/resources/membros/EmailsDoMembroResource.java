@@ -1,7 +1,7 @@
 package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
+import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -21,7 +21,10 @@ public class EmailsDoMembroResource {
     @Transactional
     public List<String> adicionarEmailAoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido final Long membroId,
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            ) final Long membroId,
             @Valid List<@NotBlank @Email String> emails) {
         var membro = Membro.buscarPorId(membroId);
         membro.emails.clear();
@@ -32,7 +35,10 @@ public class EmailsDoMembroResource {
     @GET
     public List<String> adicionarEmailAoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido final Long membroId) {
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            )  final Long membroId) {
         var membro = Membro.buscarPorId(membroId);
         return Optional.ofNullable(membro.emails).orElseGet(LinkedList::new);
     }

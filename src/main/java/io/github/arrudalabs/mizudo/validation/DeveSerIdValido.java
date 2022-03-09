@@ -8,12 +8,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = DeveSerMembroIdValidoValidator.class)
+@Constraint(validatedBy = DeveSerIdValidoValidator.class)
 @Target({ElementType.TYPE,ElementType.FIELD,ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DeveSerMembroIdValido {
+public @interface DeveSerIdValido {
 
-    String message() default "Membro informado não é valido";
+    String message();
+
+    Class<?> entityClass();
 
     Class<? extends Payload>[] payload() default {};
 

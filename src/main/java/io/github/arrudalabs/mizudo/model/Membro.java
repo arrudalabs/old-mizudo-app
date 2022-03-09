@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,13 @@ public class Membro extends PanacheEntity {
 
     @Valid
     public DadosGerais dadosGerais;
+
+    @Valid
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "registros",
+            joinColumns = @JoinColumn(name = "membro_id"))
+    public Set<@NotNull Registro> registros;
 
     @Valid
     public DadosFisicos dadosFisicos;

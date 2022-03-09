@@ -20,13 +20,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-class DeveSerMembroIdValidoValidatorTest {
+class DeveSerIdValidoValidatorTest {
 
     @Inject
     TestSupport testSupport;
 
     @Inject
-    DeveSerMembroIdValidoValidator validator;
+    DeveSerIdValidoValidator validator;
 
     @Test
     @DisplayName("testando isValid() quando o membroId for válido")

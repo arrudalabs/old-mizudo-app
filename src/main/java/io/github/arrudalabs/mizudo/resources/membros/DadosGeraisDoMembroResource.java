@@ -2,7 +2,7 @@ package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.DadosGerais;
 import io.github.arrudalabs.mizudo.model.Membro;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
+import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -16,8 +16,11 @@ public class DadosGeraisDoMembroResource {
     @PUT
     @Transactional
     public DadosGerais setDadosGerais(@PathParam("membroId")
-                            @DeveSerMembroIdValido final Long membroId,
-                           @Valid final DadosGerais dadosGerais) {
+                                      @DeveSerIdValido(
+                                              entityClass = Membro.class,
+                                              message = "O membro informado não é valido"
+                                      ) final Long membroId,
+                                      @Valid final DadosGerais dadosGerais) {
         Membro membro = Membro.buscarPorId(membroId);
         membro.dadosGerais = dadosGerais;
         return dadosGerais;

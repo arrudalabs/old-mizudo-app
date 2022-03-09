@@ -3,7 +3,7 @@ package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.github.arrudalabs.mizudo.model.Telefone;
-import io.github.arrudalabs.mizudo.validation.DeveSerMembroIdValido;
+import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 import io.github.arrudalabs.mizudo.validation.ValidationGroups;
 
 import javax.transaction.Transactional;
@@ -23,7 +23,10 @@ public class TelefonesDoMembroResource {
     @Transactional
     public List<Telefone> setTelefonesDoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido final Long membroId,
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            )  final Long membroId,
             @Valid
             @ConvertGroup(to = ValidationGroups.OnPut.class)
                     List<@NotNull Telefone> telefones
@@ -37,7 +40,10 @@ public class TelefonesDoMembroResource {
     @GET
     public List<Telefone> getTelefonesDoMembro(
             @PathParam("membroId")
-            @DeveSerMembroIdValido final Long membroId) {
+            @DeveSerIdValido(
+                    entityClass = Membro.class,
+                    message = "O membro informado não é valido"
+            )  final Long membroId) {
         return Membro.buscarPorId(membroId).telefones;
     }
 
