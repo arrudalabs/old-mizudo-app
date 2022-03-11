@@ -9,7 +9,7 @@ import java.util.Objects;
 @Embeddable
 public class Telefone {
 
-    public static Telefone of(String numero, String contato) {
+    public static Telefone novoTelefone(String numero, String contato) {
         var telefone = new Telefone();
         telefone.numero = numero;
         telefone.contato = contato;

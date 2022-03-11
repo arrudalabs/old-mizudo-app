@@ -9,7 +9,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Path("membros")
@@ -29,8 +28,7 @@ public class ListagemDeMembrosResource {
             @PathParam("id")
             @NotNull Long id) {
 
-        return Membro.buscarPorIdOptional(id)
-                .filter(Objects::nonNull)
+        return Membro.buscarPorId(id)
                 .map(MembroRegistrado::of)
                 .orElseThrow(()->new WebApplicationException(Response.Status.NOT_FOUND));
 

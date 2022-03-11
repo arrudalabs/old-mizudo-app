@@ -44,8 +44,8 @@ public class TelefonesDoMembroResourceTest {
 
         var membroId = apiTestSupport.executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()).id);
 
-        var telefone1 = Telefone.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
-        var telefone2 = Telefone.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        var telefone1 = Telefone.novoTelefone(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        var telefone2 = Telefone.novoTelefone(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
         assertThat("falha ao submeter o telefone",
                 definirTelefones(membroId, telefone1)
@@ -111,7 +111,7 @@ public class TelefonesDoMembroResourceTest {
                 ),
                 Arguments.arguments(
                         "não permitir telefone sem numero",
-                        Telefone.of(null,UUID.randomUUID().toString())
+                        Telefone.novoTelefone(null,UUID.randomUUID().toString())
                 ),
                 Arguments.arguments(
                         "não permitir instancia nula de telefone",

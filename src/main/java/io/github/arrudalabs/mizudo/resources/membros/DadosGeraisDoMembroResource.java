@@ -21,17 +21,20 @@ public class DadosGeraisDoMembroResource {
                                               message = "O membro informado não é valido"
                                       ) final Long membroId,
                                       @Valid final DadosGerais dadosGerais) {
-        Membro membro = Membro.buscarPorId(membroId);
-        membro.dadosGerais = dadosGerais;
+        Membro.buscarPorId(membroId)
+                .ifPresent(membro -> membro.dadosGerais = dadosGerais);
         return dadosGerais;
     }
 
 
     @GET
-    public DadosGerais getDadosGerais(@PathParam("membroId") final Long membroId) {
-        Membro membro = Membro.buscarPorId(membroId);
-        if (membro == null)
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        return Optional.ofNullable(membro.dadosGerais).orElseGet(DadosGerais::new);
+    public DadosGerais getDadosGerais(@PathParam("membroId")
+                                          @DeveSerIdValido(
+                                                  entityClass = Membro.class,
+                                                  message = "Membro inválido"
+                                          ) final Long membroId) {
+        return Membro.buscarPorId(membroId)
+                .map(membro -> membro.dadosGerais)
+                .orElseGet(DadosGerais::new);
     }
 }

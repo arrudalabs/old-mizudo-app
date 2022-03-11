@@ -35,4 +35,5 @@ public class Entidade extends PanacheEntity {
     public static void apagarEntidades() {
         Entidade.deleteAll();
     }
+
 }

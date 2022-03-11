@@ -115,6 +115,7 @@ class EntidadeResourceTest {
     }
 
     @Test
+    @DisplayName("deve remover entidade quando ela realmente existir")
     @Order(5)
     void deveRemoverEntidadeValida() {
         var iska = apiTestSupport.executeAndGet(() ->{

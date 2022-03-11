@@ -39,9 +39,9 @@ public class DadosGeraisDoMembroResourceTest {
     @Order(1)
     public void teste01() {
         Membro membroPersistido =
-        apiTestSupport.executeAndGet(() -> {
-            return Membro.novoMembro("Maximillian");
-        });
+                apiTestSupport.executeAndGet(() -> {
+                    return Membro.novoMembro("Maximillian");
+                });
         JsonObject payload = Json.createObjectBuilder()
                 .add("dataNascimento", LocalDate.now().toString())
                 .add("endereco",
@@ -100,9 +100,7 @@ public class DadosGeraisDoMembroResourceTest {
     @Order(1)
     public void teste02() {
         Membro membroPersistido =
-        apiTestSupport.executeAndGet(() -> {
-            return Membro.novoMembro("Maximillian");
-        });
+                apiTestSupport.executeAndGet(() -> Membro.novoMembro("Maximillian"));
 
         JsonObject payload = Json.createObjectBuilder()
                 .build();

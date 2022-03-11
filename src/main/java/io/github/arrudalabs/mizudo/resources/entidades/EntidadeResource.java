@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Path("entidades")
@@ -42,11 +41,8 @@ public class EntidadeResource {
             @PathParam("id") @NotNull Long id,
             @Valid final Entidade entidade) {
         return Entidade.buscarPorId(id)
-                .filter(Objects::nonNull)
-                .map(entidadePersistida -> {
-                    entidadePersistida.descricao = entidade.descricao;
-                    return entidadePersistida;
-                })
+                .stream().peek(entidadePersistida -> entidadePersistida.descricao = entidade.descricao)
+                .findFirst()
                 .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
     }
 
@@ -56,11 +52,9 @@ public class EntidadeResource {
     public Response removerEntidade(
             @PathParam("id") @NotNull Long id) {
         return Entidade.buscarPorId(id)
-                .filter(Objects::nonNull)
-                .map(entidadePersistida -> {
-                    entidadePersistida.apagarEntidade();
-                    return Response.noContent().build();
-                })
+                .stream().peek(Entidade::apagarEntidade)
+                .map(e -> Response.noContent().build())
+                .findFirst()
                 .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
     }
 

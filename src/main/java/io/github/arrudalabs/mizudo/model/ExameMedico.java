@@ -11,17 +11,18 @@ import java.util.Objects;
 @Embeddable
 public class ExameMedico {
 
-    @JsonbDateFormat(value = "yyyy-MM-dd")
-    @NotNull(groups = ValidationGroups.OnPut.class)
-    public LocalDate data;
-    public String obs;
-
     public static ExameMedico novoExameMedico(LocalDate data, String obs) {
         var exameMedico = new ExameMedico();
         exameMedico.data = data;
         exameMedico.obs = obs;
         return exameMedico;
     }
+
+    @JsonbDateFormat(value = "yyyy-MM-dd")
+    @NotNull(groups = ValidationGroups.OnPut.class)
+    public LocalDate data;
+
+    public String obs;
 
     @Override
     public boolean equals(Object o) {

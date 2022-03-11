@@ -17,6 +17,27 @@ import java.util.stream.Stream;
 @Table(name = "membros")
 public class Membro extends PanacheEntity {
 
+    public static Membro novoMembro(String nome) {
+        Membro membro = new Membro();
+        membro.nome = nome;
+        membro.persist();
+        return membro;
+    }
+
+    public static Optional<Membro> buscarPorId(Long id) {
+        return Membro.findByIdOptional(id);
+    }
+
+    public static void removerTodosMembros() {
+        List<Membro> membros = Membro.listAll();
+        membros.stream().forEach(Membro::apagar);
+    }
+
+    public static Stream<Membro> listarMembros() {
+        return Membro.streamAll();
+    }
+
+
     @NotBlank
     public String nome;
 
@@ -56,30 +77,6 @@ public class Membro extends PanacheEntity {
 
     public Graduacao graduacao;
 
-    public static Membro novoMembro(String nome) {
-        Membro membro = new Membro();
-        membro.nome = nome;
-        membro.persist();
-        return membro;
-    }
-
-    public static Membro buscarPorId(Long id) {
-        return Membro.findById(id);
-    }
-
-    public static void removerTodosMembros() {
-        List<Membro> membros = Membro.listAll();
-        membros.stream().forEach(Membro::apagar);
-    }
-
-    public static Stream<Membro> listarMembros() {
-        return Membro.streamAll();
-    }
-
-    public static Optional<Membro> buscarPorIdOptional(Long id) {
-        return Membro.findByIdOptional(id);
-    }
-
     private void apagar() {
         this.emails.clear();
         this.telefones.clear();
@@ -88,4 +85,18 @@ public class Membro extends PanacheEntity {
         this.delete();
     }
 
+    public void atualizarTelefones(List<Telefone> telefones) {
+        this.telefones.clear();
+        this.telefones.addAll(telefones);
+    }
+
+    public void atualizarEmails(List<String> emails) {
+        this.emails.clear();
+        this.emails.addAll(emails);
+    }
+
+    public void atualizarExamesMedicos(List<ExameMedico> exameMedicos) {
+        this.examesMedicos.clear();
+        this.examesMedicos.addAll(exameMedicos);
+    }
 }

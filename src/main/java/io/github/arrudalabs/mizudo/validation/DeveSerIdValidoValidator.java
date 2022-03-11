@@ -21,11 +21,14 @@ public class DeveSerIdValidoValidator implements ConstraintValidator<DeveSerIdVa
     @Override
     public boolean isValid(Serializable value, ConstraintValidatorContext context) {
         return Optional.ofNullable(value)
-                .map(id -> {
-                    Class<?> entityClass = this.constraintAnnotation.entityClass();
-                    return JpaOperations.INSTANCE
-                            .findByIdOptional(entityClass, id)
-                            .isPresent();
-                }).orElse(false);
+                .map(this::isValid)
+                .orElse(false);
+    }
+
+    private Boolean isValid(Serializable id) {
+        Class<?> entityClass = this.constraintAnnotation.entityClass();
+        return JpaOperations.INSTANCE
+                .findByIdOptional(entityClass, id)
+                .isPresent();
     }
 }

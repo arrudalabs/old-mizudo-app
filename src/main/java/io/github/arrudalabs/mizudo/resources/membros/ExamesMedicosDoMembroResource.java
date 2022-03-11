@@ -27,12 +27,11 @@ public class ExamesMedicosDoMembroResource {
                     message = "O membro informado não é valido"
             ) Long membroId,
             @Valid @ConvertGroup(to = ValidationGroups.OnPut.class) final List<@NotNull ExameMedico> exameMedicos) {
-        return Membro.buscarPorIdOptional(membroId)
-                .map(membro -> {
-                    membro.examesMedicos.clear();
-                    membro.examesMedicos.addAll(exameMedicos);
-                    return membro.examesMedicos;
-                }).get();
+        return Membro.buscarPorId(membroId)
+                .stream()
+                .peek(membro -> membro.atualizarExamesMedicos(exameMedicos))
+                .map(membro -> membro.examesMedicos)
+                .findFirst().get();
     }
 
     @GET
@@ -42,8 +41,7 @@ public class ExamesMedicosDoMembroResource {
                     entityClass = Membro.class,
                     message = "O membro informado não é valido"
             ) Long membroId) {
-        return Membro.buscarPorIdOptional(membroId)
-                .filter(Objects::nonNull)
+        return Membro.buscarPorId(membroId)
                 .map(membro -> membro.examesMedicos)
                 .orElseGet(HashSet::new);
     }
