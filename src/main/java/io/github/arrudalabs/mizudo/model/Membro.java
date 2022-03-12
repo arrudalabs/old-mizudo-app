@@ -28,6 +28,11 @@ public class Membro extends PanacheEntity {
         return Membro.findByIdOptional(id);
     }
 
+    /**
+     * Método dedicado para testes
+     * Não utilizar em produção
+     */
+    @Deprecated
     public static void removerTodosMembros() {
         List<Membro> membros = Membro.listAll();
         membros.stream().forEach(Membro::apagar);
@@ -81,6 +86,8 @@ public class Membro extends PanacheEntity {
         this.emails.clear();
         this.telefones.clear();
         this.examesMedicos.clear();
+        Usuario.buscarUsuariosDoMembro(this)
+                .forEach(Usuario::delete);
         this.persist();
         this.delete();
     }
