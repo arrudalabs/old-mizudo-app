@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.inject.Inject;
 import javax.transaction.SystemException;
+import javax.validation.Validator;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -26,7 +27,7 @@ class DeveSerIdValidoValidatorTest {
     TestSupport testSupport;
 
     @Inject
-    DeveSerIdValidoValidator validator;
+    Validator validator;
 
     @Test
     @DisplayName("testando isValid() quando o membroId for válido")
@@ -36,7 +37,7 @@ class DeveSerIdValidoValidatorTest {
     }
 
     @AfterEach
-    public void apagarMembrosCriadosNesteTeste(){
+    public void apagarMembrosCriadosNesteTeste() {
         testSupport.execute(Membro::removerTodosMembros);
     }
 
@@ -49,7 +50,10 @@ class DeveSerIdValidoValidatorTest {
     }
 
     private void testIsValid(Long membroId, boolean ehValido) {
-        assertThat(validator.isValid(membroId, null), is(ehValido));
+        assertThat(validator.validate(new DTO(membroId)), ehValido ? empty() : not(empty()));
+    }
+
+    record DTO(@DeveSerIdValido(entityClass = Membro.class, message = "membro inválido") Long membroId) {
     }
 
     static Stream<Arguments> testIsValidWhenMembroIdIsInvalidArgs() throws SystemException {

@@ -1,11 +1,9 @@
 package io.github.arrudalabs.mizudo.validation;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.reflect.InvocationTargetException;
 
-@ApplicationScoped
 public class SuportaValidacaoValidator implements ConstraintValidator<SuportaValidacao, Object> {
 
     private SuportaValidacao constraintAnnotation;
@@ -13,7 +11,7 @@ public class SuportaValidacaoValidator implements ConstraintValidator<SuportaVal
     @Override
     public void initialize(SuportaValidacao constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
-        this.constraintAnnotation = constraintAnnotation;
+        this.constraintAnnotation=constraintAnnotation;
     }
 
     @Override
@@ -22,7 +20,7 @@ public class SuportaValidacaoValidator implements ConstraintValidator<SuportaVal
             return this.constraintAnnotation
                     .classeValidadora()
                     .getConstructor(new Class[0])
-                    .newInstance(new Object[0]).test(value);
+                    .newInstance(new Object[0]).estahValido(value);
         } catch (IllegalAccessException
                 | NoSuchMethodException
                 | InstantiationException

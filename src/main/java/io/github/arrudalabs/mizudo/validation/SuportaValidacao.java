@@ -7,7 +7,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Predicate;
 
 @Constraint(validatedBy = SuportaValidacaoValidator.class)
 @Target({ElementType.TYPE,ElementType.FIELD,ElementType.PARAMETER, ElementType.METHOD})
@@ -15,7 +14,7 @@ import java.util.function.Predicate;
 public @interface SuportaValidacao {
     String message();
 
-    Class<? extends Predicate> classeValidadora();
+    Class<? extends Validacao> classeValidadora();
 
     Class<? extends Payload>[] payload() default {};
 
