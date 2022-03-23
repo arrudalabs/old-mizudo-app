@@ -2,8 +2,11 @@ package io.github.arrudalabs.mizudo.resources.membros;
 
 import io.github.arrudalabs.mizudo.model.Membro;
 import io.github.arrudalabs.mizudo.model.Usuario;
+import io.github.arrudalabs.mizudo.services.GeradorDeHash;
 import io.github.arrudalabs.mizudo.validation.DeveSerIdValido;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.ws.rs.PUT;
@@ -13,7 +16,11 @@ import javax.ws.rs.PathParam;
 @Path("/membros/{membroId}/user")
 public class UsuarioDoMembroResource {
 
+    @Inject
+    GeradorDeHash geradorDeHash;
+
     @PUT
+    @Transactional
     public UsuarioRegistrado definirUsuario(
             @DeveSerIdValido(
                     entityClass = Membro.class,
@@ -22,36 +29,22 @@ public class UsuarioDoMembroResource {
             @PathParam("membroId") final Long membroId,
             @Valid final NovoUsuario novoUsuario) {
 
-        return UsuarioRegistrado.of(novoUsuario.definirUsuario(membroId));
+        return new UsuarioRegistrado(Usuario.definirUsuario(Membro.findById(membroId),novoUsuario.username,novoUsuario.senha,geradorDeHash));
     }
 
-    public static class NovoUsuario {
-
-        @NotBlank
-        public String username;
-        @NotBlank
-        public String senha;
-        @NotBlank
-        public String confirmacaoSenha;
-
-        public Usuario definirUsuario(Long membroId) {
-            var usuario = new Usuario();
-            usuario.username = this.username;
-            //TODO implementar
-            return usuario;
-        }
+    public record NovoUsuario(@NotBlank
+                              String username,
+                              @NotBlank
+                              String senha,
+                              @NotBlank
+                              String confirmacaoSenha) {
     }
 
-    public static class UsuarioRegistrado {
+    public record UsuarioRegistrado(String username, String senha) {
 
-        public static UsuarioRegistrado of(Usuario usuario) {
-            var usuarioRegistrado = new UsuarioRegistrado();
-            usuarioRegistrado.username = usuario.username;
-            return usuarioRegistrado;
+        public UsuarioRegistrado(Usuario usuario) {
+            this(usuario.username, "*****");
         }
-
-        public String username;
-        public String senha = "*****";
     }
 
 }

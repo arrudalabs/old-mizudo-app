@@ -20,22 +20,22 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
 @QuarkusTest
-public class UsuarioDoMembroTest {
+public class UsuarioDoMembroResourceTest {
 
     @Inject
     ApiTestSupport apiTestSupport;
 
     @BeforeEach
     @AfterEach
-    void limparMembros(){
+    void limparMembros() {
         apiTestSupport.execute(Usuario::apagarTodosOsUsuarios);
         apiTestSupport.execute(Membro::removerTodosMembros);
     }
 
     @Test
-    void deveDefinirUsuarioParaUmMembroValido(){
+    void deveDefinirUsuarioParaUmMembroValido() {
 
-        var membro = apiTestSupport.executeAndGet(()->Membro.novoMembro(UUID.randomUUID().toString()));
+        var membro = apiTestSupport.executeAndGet(() -> Membro.novoMembro(UUID.randomUUID().toString()));
 
         String senha = UUID.randomUUID().toString();
         String username = UUID.randomUUID().toString();
@@ -43,19 +43,23 @@ public class UsuarioDoMembroTest {
                 .newAuthenticatedRequest()
                 .log().everything()
                 .contentType(ContentType.JSON)
-                .body(Json.createObjectBuilder()
-                        .add("username", username)
-                        .add("senha", senha)
-                        .add("confirmacaoSenha",senha)
-                        .build().toString())
-                .put("/resources/membros/{id}/user", Map.of("id",membro.id))
+                .body(
+                        """
+                                {
+                                    "username": "%s",
+                                    "senha": "%s",
+                                    "confirmacaoSenha": "%s"                            
+                                }
+                                """.formatted(username, senha, senha))
+                .put("/resources/membros/{id}/user", Map.of("id", membro.id))
                 .then()
                 .log().everything()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("username", is(username))
                 .body("senha", is("*****"));
 
+        assertThat("Não foi persistido o usuário do membro.", Usuario.buscarUsuariosDoMembro(membro).count(), is(1L));
+        assertThat("Não foi persistido o usuário do membro com o username informado.", Usuario.buscarPorUsername(username), notNullValue());
     }
-
 
 }

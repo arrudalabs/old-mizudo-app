@@ -11,17 +11,18 @@ import java.util.Optional;
 @ApplicationScoped
 public class DeveSerIdValidoValidator implements ConstraintValidator<DeveSerIdValido, Serializable> {
 
-    private DeveSerIdValido constraintAnnotation;
+    private DeveSerIdValido constraintAnnotation ;
 
     @Override
     public void initialize(DeveSerIdValido constraintAnnotation) {
-        this.constraintAnnotation = constraintAnnotation;
+        ConstraintValidator.super.initialize(constraintAnnotation);
+        this.constraintAnnotation=(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(Serializable value, ConstraintValidatorContext context) {
         return Optional.ofNullable(value)
-                .map(this::isValid)
+                .map(v -> this.isValid(v))
                 .orElse(false);
     }
 
