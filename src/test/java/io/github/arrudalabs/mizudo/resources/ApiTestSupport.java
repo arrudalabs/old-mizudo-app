@@ -23,6 +23,11 @@ public class ApiTestSupport {
                 .when();
     }
 
+    public RequestSpecification newNonAuthenticatedRequest() {
+        return given()
+                .when();
+    }
+
     public void execute(Runnable runnable) {
         testSupport.execute(runnable);
     }

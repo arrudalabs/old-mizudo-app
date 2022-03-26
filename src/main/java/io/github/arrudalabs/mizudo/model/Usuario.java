@@ -23,22 +23,31 @@ public class Usuario extends PanacheEntityBase {
         if (usuarioRef.isPresent()) {
             throw new IllegalArgumentException("Já existe usuário com o username informado");
         }
-        return Usuario.novoUsuario(membro, username, senha, geradorDeHash);
-    }
 
-    private static Usuario novoUsuario(Membro membro,
-                                       String username,
-                                       String senha,
-                                       GeradorDeHash geradorDeHash) {
         Usuario novoUsuario = new Usuario();
         novoUsuario.membro = membro;
         novoUsuario.username = username;
-        String salt = UUID.randomUUID().toString();
+        String salt = geradorDeHash.novoSalt();
         novoUsuario.salt = salt.getBytes(StandardCharsets.UTF_8);
         novoUsuario.hash = geradorDeHash.gerarHash(salt, senha).getBytes(StandardCharsets.UTF_8);
         novoUsuario.persist();
         novoUsuario.definirPapeis(Set.of(Papeis.ALUNO));
         return novoUsuario;
+    }
+
+    public static Optional<Usuario> autentica(
+            String username,
+            String senha,
+            GeradorDeHash geradorDeHash) {
+        var usuarioLocalizado = Usuario.buscarPorUsername(username);
+        if (!usuarioLocalizado.isPresent()) {
+            var hash = geradorDeHash
+                    .gerarHash(new String(usuarioLocalizado.get().salt), senha);
+            if (!hash.equals(new String(usuarioLocalizado.get().hash))) {
+                return Optional.empty();
+            }
+        }
+        return usuarioLocalizado;
     }
 
     public void definirPapeis(Set<Papeis> papeis) {
@@ -60,7 +69,7 @@ public class Usuario extends PanacheEntityBase {
      */
     @Deprecated
     public static void apagarTodosOsUsuarios() {
-        Usuario.streamAll().forEach(u->u.delete());
+        Usuario.streamAll().forEach(u -> u.delete());
     }
 
     @Id

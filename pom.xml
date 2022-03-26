@@ -16,6 +16,7 @@
     <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <version.frontend-maven-plugin>1.7.5</version.frontend-maven-plugin>
+    <javafaker.version>0.15</javafaker.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -95,6 +96,12 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.javafaker</groupId>
+      <artifactId>javafaker</artifactId>
+      <version>${javafaker.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

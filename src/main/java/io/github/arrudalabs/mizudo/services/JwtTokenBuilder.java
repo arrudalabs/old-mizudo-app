@@ -10,7 +10,6 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
