@@ -5,6 +5,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -18,6 +19,10 @@ public class Entidade extends PanacheEntity {
         return Entidade.findByIdOptional(id);
     }
 
+    public static Optional<Entidade> buscarPorDescricao(String descricao) {
+        return Entidade.find("descricao = ?1", descricao).firstResultOptional();
+    }
+
     public static Stream<Entidade> listarEntidades() {
         return Entidade.streamAll();
     }
@@ -27,6 +32,7 @@ public class Entidade extends PanacheEntity {
         entidade.descricao = descricao;
         return entidade;
     }
+
 
     public void apagarEntidade() {
         this.delete();

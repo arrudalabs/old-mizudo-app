@@ -32,6 +32,7 @@ class EntidadeResourceTest {
     void deveRetornarUmaListaDeEntidadesVazia() {
 
         listaDeEntidades()
+                .log().everything()
                 .statusCode(200)
                 .body("$", hasSize(0));
     }
@@ -73,16 +74,16 @@ class EntidadeResourceTest {
     @Test
     @Order(3)
     void deveBuscarEntidadeValida() {
-        var iska = apiTestSupport.executeAndGet(() ->{
+        var iska = apiTestSupport.executeAndGet(() -> {
             var entidade = Entidade.novaEntidade("ISKA");
             entidade.persist();
-            return  entidade;
+            return entidade;
         });
 
         apiTestSupport
                 .newAuthenticatedRequest()
                 .accept(ContentType.JSON)
-                .get("/resources/entidades/{id}", Map.of("id",iska.id))
+                .get("/resources/entidades/{id}", Map.of("id", iska.id))
                 .then()
                 .statusCode(200)
                 .body("id", is(iska.id.intValue()))
@@ -91,14 +92,13 @@ class EntidadeResourceTest {
     }
 
 
-
     @Test
     @Order(4)
     void deveEditarEntidadeValida() {
-        var iska = apiTestSupport.executeAndGet(() ->{
+        var iska = apiTestSupport.executeAndGet(() -> {
             var entidade = Entidade.novaEntidade("ISKA");
             entidade.persist();
-            return  entidade;
+            return entidade;
         });
 
         apiTestSupport
@@ -106,7 +106,7 @@ class EntidadeResourceTest {
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
                 .body(Entidade.novaEntidade("WKF"))
-                .put("/resources/entidades/{id}", Map.of("id",iska.id))
+                .put("/resources/entidades/{id}", Map.of("id", iska.id))
                 .then()
                 .statusCode(200)
                 .body("id", is(iska.id.intValue()))
@@ -118,15 +118,15 @@ class EntidadeResourceTest {
     @DisplayName("deve remover entidade quando ela realmente existir")
     @Order(5)
     void deveRemoverEntidadeValida() {
-        var iska = apiTestSupport.executeAndGet(() ->{
+        var iska = apiTestSupport.executeAndGet(() -> {
             var entidade = Entidade.novaEntidade("ISKA");
             entidade.persist();
-            return  entidade;
+            return entidade;
         });
 
         apiTestSupport
                 .newAuthenticatedRequest()
-                .delete("/resources/entidades/{id}", Map.of("id",iska.id))
+                .delete("/resources/entidades/{id}", Map.of("id", iska.id))
                 .then()
                 .statusCode(204)
         ;
@@ -138,9 +138,27 @@ class EntidadeResourceTest {
         apiTestSupport
                 .newAuthenticatedRequest()
                 .accept(ContentType.JSON)
-                .get("/resources/entidades/{id}", Map.of("id",iska.id))
+                .get("/resources/entidades/{id}", Map.of("id", iska.id))
                 .then()
                 .statusCode(404)
+        ;
+    }
+
+    @Test
+    @Order(6)
+    void deveNaoRegistrarEntidadeComAMesmaDescricao() {
+
+        apiTestSupport.execute(() -> {
+            Entidade.novaEntidade("JKA").persist();
+        });
+
+        apiTestSupport
+                .newAuthenticatedRequest()
+                .contentType(ContentType.JSON)
+                .body(Entidade.novaEntidade("JKA"))
+                .post("/resources/entidades")
+                .then()
+                .statusCode(400)
         ;
     }
 

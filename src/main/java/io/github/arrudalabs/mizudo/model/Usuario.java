@@ -5,7 +5,6 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -13,25 +12,27 @@ import java.util.stream.Stream;
 @Table(name = "usuarios")
 public class Usuario extends PanacheEntityBase {
 
-    public static Usuario definirUsuario(Membro membro,
-                                         String username,
-                                         String senha,
-                                         GeradorDeHash geradorDeHash) {
+    public static Usuario definirUsuarioParaMembroInformado(Membro membro,
+                                                            String username,
+                                                            String senha,
+                                                            GeradorDeHash geradorDeHash) {
 
         Optional<Usuario> usuarioRef = Usuario.buscarPorUsername(username);
 
         if (usuarioRef.isPresent()) {
             throw new IllegalArgumentException("Já existe usuário com o username informado");
         }
-
-        Usuario novoUsuario = new Usuario();
+        Usuario novoUsuario = novoUsuario(username, Papeis.Papel.ALUNO);
         novoUsuario.membro = membro;
-        novoUsuario.username = username;
-        String salt = geradorDeHash.novoSalt();
-        novoUsuario.salt = salt.getBytes(StandardCharsets.UTF_8);
-        novoUsuario.hash = geradorDeHash.gerarHash(salt, senha).getBytes(StandardCharsets.UTF_8);
+        novoUsuario.forcarAlteracaoDeSenha(senha, geradorDeHash);
         novoUsuario.persist();
-        novoUsuario.definirPapeis(Set.of(Papeis.ALUNO));
+        return novoUsuario;
+    }
+
+    public static Usuario novoUsuario(String username, Papeis.Papel... papeis) {
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.username = username;
+        novoUsuario.definirPapeis(papeis);
         return novoUsuario;
     }
 
@@ -40,7 +41,7 @@ public class Usuario extends PanacheEntityBase {
             String senha,
             GeradorDeHash geradorDeHash) {
         var usuarioLocalizado = Usuario.buscarPorUsername(username);
-        if (!usuarioLocalizado.isPresent()) {
+        if (usuarioLocalizado.isPresent()) {
             var hash = geradorDeHash
                     .gerarHash(new String(usuarioLocalizado.get().salt), senha);
             if (!hash.equals(new String(usuarioLocalizado.get().hash))) {
@@ -50,9 +51,13 @@ public class Usuario extends PanacheEntityBase {
         return usuarioLocalizado;
     }
 
-    public void definirPapeis(Set<Papeis> papeis) {
+    public void definirPapeis(Papeis.Papel... papeis) {
         this.papeis.clear();
-        this.papeis.addAll(papeis);
+        if (papeis == null) {
+            this.papeis.add(Papeis.Papel.ALUNO);
+            return;
+        }
+        this.papeis.addAll(Arrays.asList(papeis));
     }
 
     public static Optional<Usuario> buscarPorUsername(String username) {
@@ -92,7 +97,11 @@ public class Usuario extends PanacheEntityBase {
             joinColumns = @JoinColumn(name = "username"))
     @Column(name = "papel")
     @Enumerated(EnumType.STRING)
-    public Set<Papeis> papeis = new LinkedHashSet<>();
+    public Set<Papeis.Papel> papeis = new LinkedHashSet<>();
 
-
+    public void forcarAlteracaoDeSenha(String senha, GeradorDeHash geradorDeHash) {
+        var salt = geradorDeHash.novoSalt();
+        this.salt = salt.getBytes(StandardCharsets.UTF_8);
+        this.hash = geradorDeHash.gerarHash(salt, senha).getBytes(StandardCharsets.UTF_8);
+    }
 }

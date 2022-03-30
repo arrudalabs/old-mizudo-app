@@ -1,7 +1,11 @@
 package io.github.arrudalabs.mizudo.resources.entidades;
 
+import io.github.arrudalabs.mizudo.dto.NovaEntidade;
 import io.github.arrudalabs.mizudo.model.Entidade;
+import io.github.arrudalabs.mizudo.model.Papeis;
 
+import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.RequestScoped;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -11,14 +15,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Path("entidades")
+@RequestScoped
 public class EntidadeResource {
 
     @POST
     @Transactional
-    public Entidade novaEntidade(@Valid Entidade entidade) {
+    @RolesAllowed({Papeis.ADMINISTRADOR, Papeis.COORDENADOR})
+    public Entidade novaEntidade(@Valid NovaEntidade novaEntidade) {
+        Entidade entidade = novaEntidade.criarEntidade();
         entidade.persist();
         return entidade;
     }
+
 
     @GET
     public List<Entidade> listarEntidades() {
@@ -37,6 +45,7 @@ public class EntidadeResource {
     @PUT
     @Transactional
     @Path("{id}")
+    @RolesAllowed({Papeis.ADMINISTRADOR, Papeis.COORDENADOR})
     public Entidade atualizarEntidade(
             @PathParam("id") @NotNull Long id,
             @Valid final Entidade entidade) {
@@ -49,6 +58,7 @@ public class EntidadeResource {
     @DELETE
     @Transactional
     @Path("{id}")
+    @RolesAllowed({Papeis.ADMINISTRADOR, Papeis.COORDENADOR})
     public Response removerEntidade(
             @PathParam("id") @NotNull Long id) {
         return Entidade.buscarPorId(id)
@@ -57,6 +67,5 @@ public class EntidadeResource {
                 .findFirst()
                 .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
     }
-
 
 }
