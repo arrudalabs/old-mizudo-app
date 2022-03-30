@@ -14,9 +14,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
@@ -40,15 +42,23 @@ public class NovoMembroResourceTest {
     @DisplayName("deve adicionar novo membro")
     @Order(1)
     public void teste01() {
-        apiTestSupport.newAuthenticatedRequest()
+        MembroRegistrado membroPersistido = apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("nome", "Maximillian"))
                 .post("/resources/membros")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("id", not(blankOrNullString()))
-                .body("nome", equalTo("Maximillian"));
+                .extract()
+                .as(MembroRegistrado.class);
+
+        assertThat(membroPersistido.id(), notNullValue());
+        assertThat(membroPersistido.nome(), equalTo("Maximillian"));
+
+        apiTestSupport.execute(() -> {
+            assertThat(Membro.buscarPorId(membroPersistido.id()).isPresent(), is(true));
+        });
+
     }
 
     @ParameterizedTest(name = "{index} {0}")
@@ -60,7 +70,7 @@ public class NovoMembroResourceTest {
         apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.isNull(nome) ?
-                        Json.createObjectBuilder().addNull("nome").build():
+                        Json.createObjectBuilder().addNull("nome").build() :
                         Json.createObjectBuilder().add("nome", nome).build())
                 .post("/resources/membros")
                 .then()
