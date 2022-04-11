@@ -14,10 +14,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -65,7 +63,7 @@ public class NovoMembroResourceTest {
     @DisplayName("não deve adicionar novo membro sem informar um nome válido")
     @Order(3)
     @MethodSource("teste03Args")
-    public void teste03(String caso, String nome) {
+    public void teste03(String ignoreCaso, String nome) {
 
         apiTestSupport.newAuthenticatedRequest()
                 .contentType(MediaType.APPLICATION_JSON)
